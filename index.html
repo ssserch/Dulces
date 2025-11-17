@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://ssserch.com/img/trashicons/DULCES.png" type="image/png">
+    <title>🎃🎃🎃</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+      
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      
+      body {
+          font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          background-image: url('https://ssserch.com/img/space.gif');
+          background-size: cover;
+          background-position: center;
+          background-attachment: fixed;
+          color: #f0f0f0;
+          position: relative;
+          overflow-x: hidden;
+          padding: 20px;
+      }
+      
+      .blur-background {
+          background-color: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(5px);
+          pointer-events: none;
+          transition: background-color 0.3s ease;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+      }
+      
+      .corner-btn {
+          position: fixed;
+          top: 20px;
+          width: 50px;
+          height: 50px;
+          border-radius: 0;
+          border: 2px solid #ff6600;
+          background: #000;
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+          transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+          z-index: 100;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      
+      .corner-btn:hover {
+          background: #ff6600;
+          color: #000;
+          border-color: #ff8800;
+      }
+      
+      #keyBtn {
+          left: 20px;
+      }
+      
+      #infoBtn {
+          right: 20px;
+      }
+      
+      #mainContent {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          max-width: 900px;
+          z-index: 10;
+      }
+      
+      h1 {
+          font-family: 'Press Start 2P', cursive;
+          color: #ff6600;
+          text-shadow: 0 2px 8px rgba(255, 102, 0, 0.4);
+          z-index: 1;
+          margin-bottom: 25px;
+          font-size: 2.2rem;
+          text-align: center;
+          font-weight: 900;
+          background-color: rgba(0, 0, 0, 0.5);
+          padding: 15px 20px;
+          border-radius: 0;
+      }
+      
+      #videoContainer {
+          position: relative;
+          width: 100%;
+          max-width: 800px;
+          aspect-ratio: 4/3;
+          border-radius: 0;
+          overflow: hidden;
+          border: 3px solid #ff6600;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          z-index: 1;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          margin-bottom: 0;
+          background-color: #000;
+      }
+      
+      #videoContainer.hidden {
+          opacity: 0;
+          transform: scale(0.95);
+          pointer-events: none;
+          position: absolute;
+      }
+      
+      video {
+          width: 100%;
+          height: 100%;
+          display: block;
+          object-fit: cover;
+          transform: scaleX(-1);
+      }
+      
+      #faceOverlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          transform: scaleX(-1);
+      }
+      
+      #countdown {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 120px;
+          font-weight: bold;
+          color: rgba(255, 255, 255, 0.95);
+          text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+          display: none;
+          z-index: 10;
+      }
+      
+      #scanButton {
+          font-size: 1.5rem;
+          padding: 15px 40px;
+          margin-top: 20px;
+          cursor: pointer;
+          background: #000;
+          color: white;
+          border: 2px solid #ff6600;
+          border-radius: 0;
+          font-weight: bold;
+          transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+          z-index: 1;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          min-width: 200px;
+      }
+      
+      #scanButton:hover {
+          background: #ff6600;
+          color: #000;
+          border-color: #ff8800;
+      }
+      
+      #scanButton:disabled {
+          background: #222;
+          border-color: #222;
+          color: #999;
+          cursor: not-allowed;
+          box-shadow: none;
+      }
+      
+      #scanButton:active {
+          transform: scale(0.98);
+      }
+      
+      #scanButton.hidden {
+          visibility: hidden;
+      }
+      
+      #results {
+          margin-top: 20px;
+          text-align: center;
+          width: 100%;
+          max-width: 800px;
+          z-index: 1;
+          min-height: 0;
+      }
+      
+      #capturedImage {
+          width: 100%;
+          max-width: 800px;
+          border-radius: 0;
+          border: 3px solid #ff6600;
+          display: none;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          transition: all 0.5s ease;
+          transform: scaleX(-1);
+      }
+      
+      #capturedImage.positive {
+          border-color: #00ff00;
+          box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
+      }
+      
+      #capturedImage.negative {
+          border-color: #ff0000;
+          box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+      }
+      
+      #aiResult {
+          font-size: 2rem;
+          font-weight: bold;
+          margin-top: 15px;
+          color: #ff6600;
+          min-height: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          padding: 5px 15px;
+          border-radius: 0;
+      }
+      
+      #canvas {
+          display: none;
+      }
+      
+      #apiModal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.95);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+      }
+      
+      .modal-content {
+          background: linear-gradient(135deg, #111, #000);
+          padding: 40px;
+          border-radius: 0;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+          max-width: 550px;
+          width: 90%;
+          border: 2px solid #ff6600;
+      }
+      
+      .modal-content h2 {
+          color: #ff6600;
+          margin-bottom: 20px;
+          text-align: center;
+          font-size: 1.8rem;
+      }
+      
+      .modal-content p {
+          text-align: center;
+          margin-bottom: 20px;
+          color: #bbb;
+          font-size: 14px;
+          line-height: 1.6;
+      }
+      
+      .modal-content a {
+          color: #ff8800;
+          text-decoration: none;
+      }
+      
+      .modal-content a:hover {
+          text-decoration: underline;
+      }
+      
+      .input-group {
+          position: relative;
+          margin-bottom: 20px;
+      }
+      
+      .input-group input {
+          width: 100%;
+          padding: 15px 110px 15px 15px;
+          border: 2px solid #333;
+          border-radius: 0;
+          background: #000;
+          color: #fff;
+          font-size: 16px;
+          transition: all 0.3s;
+      }
+      
+      .input-group input:focus {
+          outline: none;
+          border-color: #ff6600;
+      }
+      
+      .input-icons {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          display: flex;
+          gap: 10px;
+      }
+      
+      .icon-btn {
+          background: none;
+          border: none;
+          color: #888;
+          cursor: pointer;
+          font-size: 22px;
+          padding: 5px 10px;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      
+      .icon-btn svg {
+          width: 24px;
+          height: 24px;
+      }
+      
+      .icon-btn:hover {
+          color: #ff6600;
+      }
+      
+      .tooltip {
+          position: relative;
+          display: inline-block;
+      }
+      
+      .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 260px;
+          background-color: #000;
+          color: #fff;
+          text-align: center;
+          border-radius: 0;
+          padding: 12px;
+          position: absolute;
+          z-index: 1;
+          bottom: 125%;
+          right: 0;
+          opacity: 0;
+          transition: opacity 0.3s;
+          font-size: 13px;
+          border: 1px solid #ff6600;
+      }
+      
+      .tooltip:hover .tooltiptext {
+          visibility: visible;
+          opacity: 1;
+      }
+      
+      #insertButton {
+          width: 100%;
+          padding: 15px;
+          background: #00b300;
+          color: white;
+          border: none;
+          border-radius: 0;
+          font-size: 18px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+          text-transform: uppercase;
+      }
+      
+      #insertButton:hover {
+          background: #00d900;
+      }
+      
+      .scan-line {
+          position: absolute;
+          width: 100%;
+          height: 3px;
+          background: linear-gradient(90deg, transparent, #00ff00, transparent);
+          top: 0;
+          left: 0;
+          display: none;
+          animation: scanning 2s linear;
+          z-index: 15;
+          box-shadow: 0 0 10px #00ff00;
+      }
+      
+      @keyframes scanning {
+          0% { top: 0; }
+          100% { top: 100%; }
+      }
+      
+      #resultModal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.95);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+      }
+      
+      .result-content {
+          background: linear-gradient(135deg, #111, #000);
+          padding: 40px;
+          border-radius: 0; 
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+          text-align: center;
+          max-width: 550px;
+          width: 90%;
+          border: 2px solid #ff6600;
+      }
+      
+      .result-content img {
+          width: 250px;
+          height: 250px;
+          border-radius: 0;
+          margin-bottom: 20px;
+          object-fit: cover;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      
+      .result-content h2 {
+          color: #ff6600;
+          font-size: 2rem;
+          margin-bottom: 20px;
+      }
+      
+      #backButton {
+          padding: 15px 40px;
+          background: #000;
+          color: white;
+          border: 2px solid #ff6600;
+          border-radius: 0;
+          font-size: 18px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+          text-transform: uppercase;
+          margin-top: 20px;
+      }
+      
+      #backButton:hover {
+          background: #ff6600;
+          color: #000;
+          border-color: #ff8800;
+      }
+      
+      .decorative-gif {
+          position: fixed;
+          bottom: 10px;
+          left: 10px;
+          width: 300px;
+          height: auto;
+          z-index: 5;
+      }
+    </style>
+</head>
+<body>
+    <div class="blur-background"></div>
+    <button class="corner-btn" id="keyBtn" title="Cambiar API Key">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+    </button>
+    <button class="corner-btn" id="infoBtn" title="Información">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+    </button>
+    <div id="apiModal">
+        <div class="modal-content">
+            <h2>Inserta tu CLAVE API</h2>
+            <p>
+                Si no la tienes, obtenla aqui:<br>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank">https://aistudio.google.com/app/apikey</a>
+            </p>
+            <div class="input-group">
+                <input type="password" id="apiKeyInput" placeholder="Pega tu API Key aquí">
+                <div class="input-icons">
+                    <button class="icon-btn" id="togglePassword">
+                    </button>
+                    <div class="tooltip">
+                        <button class="icon-btn">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        </button>
+                        <span class="tooltiptext">No se va recopilar ni guardar en los servidores tu clave, ¡solo tu y tu navegador lo tendrán! :D</span>
+                    </div>
+                </div>
+            </div>
+            <button id="insertButton">Insertar</button>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <a href="https://ssserch.com"><img src="https://ssserch.com/ExtraStorage/koishi.gif" alt="Koishi" class="decorative-gif"></a>
+        <h1>Dispensador de golosinas</h1>
+        <p>(Solo si tienes traje...)</p><br>
+        <div id="videoContainer">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="faceOverlay"></canvas>
+            <div id="countdown"></div>
+            <div class="scan-line" id="scanLine"></div>
+        </div>
+        
+        <button id="scanButton">Escanear</button>
+
+        <div id="results">
+            <img id="capturedImage" alt="Foto capturada">
+            <div id="aiResult"></div>
+        </div>
+    </div>
+
+    <div id="resultModal">
+        <div class="result-content">
+            <img id="resultGif" src="" alt="Resultado">
+            <h2 id="resultMessage"></h2>
+            <button id="backButton">Volver</button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script src="face-api.min.js"></script>
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        let API_KEY = "";
+        let genAI;
+        let model;
+
+        const iconEye = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+        const iconEyeOff = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+        const apiModal = document.getElementById('apiModal');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const insertButton = document.getElementById('insertButton');
+        const togglePassword = document.getElementById('togglePassword');
+        const mainContent = document.getElementById('mainContent');
+        const video = document.getElementById('video');
+        const videoContainer = document.getElementById('videoContainer');
+        const scanButton = document.getElementById('scanButton');
+        const countdownDisplay = document.getElementById('countdown');
+        const capturedImage = document.getElementById('capturedImage');
+        const aiResult = document.getElementById('aiResult');
+        const canvas = document.getElementById('canvas');
+        const faceOverlay = document.getElementById('faceOverlay');
+        const scanLine = document.getElementById('scanLine');
+        const resultModal = document.getElementById('resultModal');
+        const resultGif = document.getElementById('resultGif');
+        const resultMessage = document.getElementById('resultMessage');
+        const backButton = document.getElementById('backButton');
+        const keyBtn = document.getElementById('keyBtn');
+        const infoBtn = document.getElementById('infoBtn');
+
+        let stream = null;
+        let timerId = null;
+        let countdownValue = 5;
+        let faceDetectionLoaded = false;
+        async function loadFaceApiModels() {
+            try {
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri('./models'),
+                    faceapi.nets.faceLandmark68Net.loadFromUri('./models'),
+                    faceapi.nets.faceExpressionNet.loadFromUri('./models')
+                ]);
+                faceDetectionLoaded = true;
+                console.log('Modelos de face-api.js cargados correctamente');
+            } catch (error) {
+                console.error('Error al cargar modelos de face-api.js:', error);
+                document.getElementById('aiResult').textContent = "Error al cargar modelos de IA. (¿Refresca?)";
+            }
+        }
+        async function detectFaces() {
+            if (!faceDetectionLoaded || !video.videoWidth || video.paused || video.ended) {
+                requestAnimationFrame(detectFaces);
+                return;
+            }
+
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
+            
+            faceOverlay.width = video.videoWidth;
+            faceOverlay.height = video.videoHeight;
+            const resizedDetections = faceapi.resizeResults(detections, { width: video.videoWidth, height: video.videoHeight });
+
+            const ctx = faceOverlay.getContext('2d');
+            ctx.clearRect(0, 0, faceOverlay.width, faceOverlay.height);
+
+            resizedDetections.forEach(result => {
+                const { detection, expressions } = result;
+                const box = detection.box;
+                
+                const dominantExpression = Object.keys(expressions).reduce((a, b) => expressions[a] > expressions[b] ? a : b);
+                const confidence = Math.round(expressions[dominantExpression] * 100);
+
+                ctx.strokeStyle = '#00ff00';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(box.x, box.y, box.width, box.height);
+
+                const text = `${dominantExpression} (${confidence}%)`;
+                ctx.fillStyle = '#00ff00';
+                ctx.font = '16px Arial';
+                const textX = box.x;
+                const textY = box.y > 10 ? box.y - 5 : box.y + box.height + 20;
+                ctx.fillText(text, textX, textY);
+            });
+
+            requestAnimationFrame(detectFaces);
+        }
+
+        keyBtn.addEventListener('click', () => {
+            apiKeyInput.value = '';
+            apiModal.style.display = 'flex';
+        });
+
+        infoBtn.addEventListener('click', () => {
+            window.location.href = 'https://ssserch.com/Dulces/info';
+        });
+
+        togglePassword.addEventListener('click', () => {
+            const isPassword = apiKeyInput.type === 'password';
+            apiKeyInput.type = isPassword ? 'text' : 'password';
+            togglePassword.innerHTML = isPassword ? iconEyeOff : iconEye;
+        });
+
+        insertButton.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (!key) {
+                document.getElementById('aiResult').textContent = 'inserta una API Key válida';
+                return;
+            }
+            
+            API_KEY = key;
+            try {
+                genAI = new GoogleGenerativeAI(API_KEY);
+                model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" }); // FAST
+                
+                apiModal.style.display = 'none';
+                
+                loadFaceApiModels();
+                iniciarCamara();
+            } catch (error) {
+                document.getElementById('aiResult').textContent = 'Error al configurar la API. (¡Verifica tu clave!)';
+                console.error(error);
+            }
+        });
+
+        async function iniciarCamara() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: false 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Error al acceder a la cámara:", err);
+                aiResult.textContent = "Error: No se pudo acceder a la cámara.";
+                document.getElementById('aiResult').textContent = "Error: ¿Tu navegador no soporta la camara?";
+            }
+        }
+
+        video.addEventListener('play', () => {
+            console.log("!! SE DETECTO VIDEO");
+            detectFaces();
+        });
+
+
+        function handleScanClick() {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+                tomarFotoYAIEvaluar();
+            } else {
+                scanButton.textContent = "Adelantar";
+                countdownValue = 5;
+                countdownDisplay.textContent = countdownValue;
+                countdownDisplay.style.display = 'block';
+                aiResult.textContent = '';
+                capturedImage.style.display = 'none';
+                capturedImage.className = '';
+
+                timerId = setInterval(() => {
+                    countdownValue--;
+                    countdownDisplay.textContent = countdownValue;
+                    
+                    if (countdownValue <= 0) {
+                        clearInterval(timerId);
+                        timerId = null;
+                        tomarFotoYAIEvaluar();
+                    }
+                }, 1000);
+            }
+        }
+
+        async function tomarFotoYAIEvaluar() {
+            scanButton.textContent = "Escanear";
+            scanButton.disabled = true;
+            scanButton.classList.add('hidden');
+            countdownDisplay.style.display = 'none';
+            aiResult.textContent = "Analizando...";
+
+            videoContainer.classList.add('hidden');
+
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.translate(canvas.width, 0); 
+            context.scale(-1, 1);
+            context.drawImage(video, 0, 0, canvas.width, canvas.height); 
+
+            context.setTransform(1, 0, 0, 1, 0, 0);
+
+            const imageDataURL = canvas.toDataURL('image/jpeg');
+            capturedImage.style.transform = 'scaleX(-1)';
+            capturedImage.src = imageDataURL;
+            capturedImage.style.display = 'block';
+
+            scanLine.style.display = 'block';
+            setTimeout(() => {
+                scanLine.style.display = 'none';
+            }, 2000);
+
+            if (!model) {
+                aiResult.textContent = "¡API Key no configurada!";
+                setTimeout(resetUI, 2000);
+                return;
+            }
+
+            const base64Data = imageDataURL.split(',')[1];
+            
+            // PROMPT (gemini)
+            
+            try {
+                const prompt = "Analiza cuidadosamente la imagen y determina si la persona o personas que aparecen (Ya sean reales o en una imagen) están usando un disfraz de Halloween, entendiendo por disfraz cualquier vestimenta, maquillaje, máscara o accesorio que represente un personaje, criatura, superhéroe, monstruo, profesión, objeto o concepto fuera de la ropa cotidiana. Ignora elementos del fondo o decoraciones que no estén directamente en la persona. Responde únicamente con una palabra: 'SI CUENTA' si claramente lleva un disfraz de Halloween o 'NO CUENTA' si no parece un disfraz o es ropa normal.";
+                
+                const imagePart = {
+                    inlineData: {
+                        data: base64Data,
+                        mimeType: "image/jpeg"
+                    }
+                };
+
+                const result = await model.generateContent([prompt, imagePart]);
+                const response = await result.response;
+                const text = response.text().trim();
+
+                let isPositive = false;
+                if (text.includes("SI CUENTA")) {
+                    aiResult.textContent = "SI CUENTA";
+                    capturedImage.classList.add('positive');
+                    isPositive = true;
+                } else {
+                    aiResult.textContent = "NO CUENTA";
+                    capturedImage.classList.add('negative');
+                }
+                
+                setTimeout(() => {
+                    if (isPositive) {
+                        showResultModal(isPositive);
+                    } else {
+                        resetUI();
+                    }
+                }, 2000);
+
+            } catch (error) {
+                console.error("Error en la API de Gemini:", error);
+                aiResult.textContent = "Error al contactar a la IA.";
+                capturedImage.classList.add('negative');
+                setTimeout(resetUI, 2000);
+            }
+        }
+
+        function showResultModal(isPositive) {
+            resultModal.style.display = 'flex';
+            resultGif.src = 'https://ssserch.com/Dulces/img/gumball.gif';
+            resultMessage.textContent = 'Ganaste dulces (/^▽^)/';
+        }
+
+        function resetUI() {
+            aiResult.textContent = "";
+            capturedImage.style.display = 'none';
+            capturedImage.className = '';
+            videoContainer.classList.remove('hidden');
+            scanButton.disabled = false;
+            scanButton.classList.remove('hidden');
+        }
+
+        backButton.addEventListener('click', () => {
+            resultModal.style.display = 'none';
+            resetUI();
+        });
+
+        // --- INICIALIZACIÓN ---
+        function init() {
+            togglePassword.innerHTML = iconEye;
+            scanButton.addEventListener('click', handleScanClick);
+             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('aiResult').textContent = "damn... tu navegador no soporta la camara";
+                scanButton.disabled = true;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
